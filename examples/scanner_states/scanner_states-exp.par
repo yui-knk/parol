@@ -5,13 +5,14 @@
 %block_comment "/\*" "\*/"
 
 %scanner String { %auto_newline_off %auto_ws_off }
+%scanner String2 { %auto_newline_off %auto_ws_off }
 
 %%
 
 /*  0 */ Start: StartList /* Vec */;
 /*  1 */ StartList /* Vec<T>::Push */: Content StartList;
 /*  2 */ StartList /* Vec<T>::New */: ;
-/*  3 */ Content: Identifier;
+/*  3 */ Content: %push(String2) Identifier;
 /*  4 */ Content: StringDelimiter %push(String) StringContent StringDelimiter %pop();
 /*  5 */ StringContent: StringElement StringContent;
 /*  6 */ StringContent: ;
@@ -22,4 +23,4 @@
 /* 11 */ Escaped: <String>"\u{5c}[\u{22}\u{5c}bfnt]";
 /* 12 */ EscapedLineEnd: <String>"\u{5c}[\s^\n\r]*\r?\n";
 /* 13 */ NoneQuote: <String>"[^\u{22}\u{5c}]+";
-/* 14 */ StringDelimiter: <INITIAL, String>"\u{22}";
+/* 14 */ StringDelimiter: <INITIAL, String, String2>"\u{22}";
